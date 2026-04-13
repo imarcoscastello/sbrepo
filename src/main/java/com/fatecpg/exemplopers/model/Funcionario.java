@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -34,4 +35,10 @@ public class Funcionario extends Pessoa {
     @JsonManagedReference
     @OneToMany(mappedBy = "funcionario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExperienciaProfissional> experienciaProfissional = new ArrayList<>();
+
+    @JsonIgnore
+    public void addExperienciaProfissional(ExperienciaProfissional ep) {
+        this.experienciaProfissional.add(ep);
+        ep.setFuncionario(this);
+    }
 }

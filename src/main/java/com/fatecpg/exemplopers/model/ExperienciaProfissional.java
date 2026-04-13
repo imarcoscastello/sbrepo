@@ -1,6 +1,8 @@
 package com.fatecpg.exemplopers.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -41,4 +43,9 @@ public class ExperienciaProfissional {
     @ManyToOne // Experiência profissional de um funcionário
     @JoinColumn(name = "funcionario_id") // Nome da coluna no banco
     private Funcionario funcionario;  // corresponde ao mappedBy em Funcionário
+
+    @JsonIgnore
+    public void setFuncionario(Funcionario funcionario) {
+        this.funcionario = funcionario;
+    }
 }

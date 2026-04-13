@@ -1,6 +1,8 @@
 package com.fatecpg.exemplopers.controller;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fatecpg.exemplopers.model.ExperienciaProfissional;
 import com.fatecpg.exemplopers.model.Funcionario;
+import com.fatecpg.exemplopers.model.Pessoa;
+import com.fatecpg.exemplopers.repository.ExperienciaProfissionalRepository;
 import com.fatecpg.exemplopers.service.PessoaService;
 
 @RestController
@@ -51,5 +56,27 @@ public class FuncionarioController {
         } else {
             return ResponseEntity.notFound().build(); // 404 Not Found
         }
-    }    
+    }
+    
+    @PostMapping("/funcionarios/{id}/experienciaProfissional")
+    public ResponseEntity<Funcionario> addExperienciaProfissional(@PathVariable Long id, @RequestBody ExperienciaProfissional ep) {
+        Optional<Pessoa> funcionario = pessoaService.findFuncionarioById(id)
+            .map(f -> {
+                f.addExperienciaProfissional(ep);
+                return pessoaService.updatePessoa(id, f);
+            })
+            .orElseThrow(() -> new RuntimeException("Funcionário não encontrado"));
+        return ResponseEntity.ok((Funcionario)funcionario.get());
+    }
+
+    @PutMapping("/funcionarios/{id}/experienciaProfissional/{epid}")
+    public ResponseEntity<ExperienciaProfissional> updateExperienciaProfissional(
+        @PathVariable Long id, 
+        @PathVariable Long epid,
+        @RequestBody ExperienciaProfissional ep) 
+    {
+        return pessoaService.updateExperienciaProfissional(id, epid, ep)
+            .map(xep -> ResponseEntity.ok(xep))
+            .orElse(ResponseEntity.notFound().build());
+    }
 }
