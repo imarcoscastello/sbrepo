@@ -1,29 +1,29 @@
 package com.fatecpg.exemplopers.model;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.*;
 
 @Entity  // Indica que esta classe é uma entidade JPA, ou seja, será mapeada para uma tabela no banco de dados.
-@Table(name = "promocao") // Especifica o nome da tabela no banco de dados que esta entidade irá mapear.
+@Table(name = "projetos") // Especifica o nome da tabela no banco de dados que esta entidade irá mapear.
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-
-public class Promocao {
+public class Projeto {
 
     @Id // Indica que o campo "id" é a chave primária da entidade.
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Especifica que o valor do campo "id" será gerado automaticamente
@@ -32,17 +32,17 @@ public class Promocao {
     @EqualsAndHashCode.Include
     private long id;
 
-    @Column(nullable = false) 
+    @Column(nullable = false, unique = true) // Especifica que a coluna "nome" é obrigatória e única (sem repetições)
     @ToString.Include
-    private LocalDate dataPromocao;
+    private String nome;
 
-    @Column(nullable = false) // Especifica que a coluna "nome" é obrigatória e única (sem repetições)
-    @ToString.Include
-    private BigDecimal novoSalario;
+    @Column(length = 255, nullable = false) // Especifica o tamanho máximo da coluna "descricao"
+    private String descricao;
 
+    @Column(precision = 14, scale = 2, nullable = false) // Especifica a precisão e escala da coluna "orcamento"
+    private BigDecimal orcamento;
+ 
     @JsonBackReference
-    @ManyToOne // promoção de um funcionário
-    @JoinColumn(name = "funcionario_id") // Nome da coluna no banco
-    private Funcionario funcionario;  // corresponde ao mappedBy em Funcionário
-
+    @ManyToMany(mappedBy = "projetos")
+    private Set<Funcionario> funcionarios = new HashSet<>();
 }

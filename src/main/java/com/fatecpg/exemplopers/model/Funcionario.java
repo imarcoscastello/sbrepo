@@ -2,7 +2,9 @@ package com.fatecpg.exemplopers.model;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -11,6 +13,9 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import lombok.*;
 
@@ -39,6 +44,15 @@ public class Funcionario extends Pessoa {
     @JsonManagedReference
     @OneToMany(mappedBy = "funcionario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Promocao> promocao = new ArrayList<>();
+
+    @JsonManagedReference
+    @ManyToMany
+    @JoinTable(
+        name = "funcionario_projeto", // Nome da tabela intermediária
+        joinColumns = @JoinColumn(name = "funcionario_id"), // FK para esta entidade
+        inverseJoinColumns = @JoinColumn(name = "projeto_id") // FK para a outra entidade
+    )
+    private Set<Projeto> projetos = new HashSet<>();
 
     @JsonIgnore
     public void addExperienciaProfissional(ExperienciaProfissional ep) {
